@@ -1,15 +1,11 @@
 // ChatWindow.jsx
 import React, { useState } from 'react';
 import './App.css';
-import { OpenAI } from "langchain/llms/openai";
 import { HumanMessage } from "langchain/schema";
-
-const llm = new OpenAI({
-  openAIApiKey: "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",
-});
+// import { ChatMessageHistory } from "langchain/memory";
 
 
-export const ChatWindow = () => {
+export const ChatWindow = ({title, agent, runMode}) => {
   const [input, setInput] = useState('');
   const [conversation, setConversation] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -21,6 +17,8 @@ export const ChatWindow = () => {
   };
 
   const handleSubmit = async(e) => {
+    console.log("submit")
+    console.log("current run mode: " + runMode)
     e.preventDefault();
     const userInput = input.trim();
     if (!userInput) return;
@@ -28,11 +26,35 @@ export const ChatWindow = () => {
     // const aiResponse = 'This is a simulated response.'; // Replace with actual AI response if needed
     const messages = [new HumanMessage({ content: userInput })];
     console.log(messages)
-    const aiResponse = await llm.predictMessages(messages);
-    console.log(aiResponse);
-    setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse.content }]);
+
+    if (runMode === "Zero-Shot LLM") {
+      console.log("Zero-Shot LLM boutta run")
+      const aiResponse = await agent.predictMessages(messages);
+      console.log(aiResponse);
+      setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse.content }]);
+    } 
+
+    else if (runMode === "Chat Model") {
+      console.log("Chat Model boutta run")
+      console.log("user input: " + userInput)
+      console.log(agent.memory)
+      console.log(agent)
+      const aiResponse = await agent.call({ input : userInput });
+      console.log(aiResponse);
+      setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse.response}]);
+    }
+    
+    else if (runMode === "agent") {
+      console.log("agent boutta run")
+      const aiResponse = await agent.run(userInput);
+      console.log(aiResponse);
+      setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse}]);
+    }
+
     setInput('');
+    console.log("end submit")
   };
+
 
   const handleDragStart = (e) => {
     setIsDragging(true);
@@ -72,6 +94,7 @@ export const ChatWindow = () => {
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd} // Stop dragging when the mouse leaves the window
       >
+        <h2>{title}</h2> {/* Add this line */}
         <button onClick={toggleMinimize}>Minimize</button>
         <div className="conversation">
           {conversation.map((message, index) => (

@@ -1,14 +1,30 @@
-import logo from './logo.svg';
+// import logo from './logo.svg';
+// import './App.css';
+// import { ChatWindow } from './ChatWindow';
+
+// function App() {
+//   return (
+//     <div className="App">
+//     <ChatWindow />
+//     <ChatWindow />
+//     <ChatWindow />
+//   </div>
+//   );
+// }
+
+// export default App;
+
+
+// App.js
+import React from 'react';
 import './App.css';
-import { ChatWindow } from './ChatWindow';
+import { ChatWindowManager } from './ChatWindowManager'; // Make sure the path is correct
 
 function App() {
   return (
     <div className="App">
-    <ChatWindow />
-    <ChatWindow />
-    <ChatWindow />
-  </div>
+      <ChatWindowManager />
+    </div>
   );
 }
 
