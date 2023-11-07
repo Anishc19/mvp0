@@ -1,6 +1,13 @@
 // ChatWindow.jsx
 import React, { useState } from 'react';
 import './App.css';
+import { OpenAI } from "langchain/llms/openai";
+import { HumanMessage } from "langchain/schema";
+
+const llm = new OpenAI({
+  openAIApiKey: "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",
+});
+
 
 export const ChatWindow = () => {
   const [input, setInput] = useState('');
@@ -13,13 +20,17 @@ export const ChatWindow = () => {
     setInput(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const userInput = input.trim();
     if (!userInput) return;
     setConversation((prevConvo) => [...prevConvo, { sender: 'user', text: userInput }]);
-    const aiResponse = 'This is a simulated response.'; // Replace with actual AI response if needed
-    setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse }]);
+    // const aiResponse = 'This is a simulated response.'; // Replace with actual AI response if needed
+    const messages = [new HumanMessage({ content: userInput })];
+    console.log(messages)
+    const aiResponse = await llm.predictMessages(messages);
+    console.log(aiResponse);
+    setConversation((prevConvo) => [...prevConvo, { sender: 'ai', text: aiResponse.content }]);
     setInput('');
   };
 
