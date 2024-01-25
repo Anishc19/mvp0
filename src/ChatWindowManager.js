@@ -10,11 +10,11 @@ import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import { Calculator } from "langchain/tools/calculator";
 
 import { ConversationChain } from "langchain/chains";
-import { ChatMessageHistory } from "langchain/memory";
+import { ChatMessageHistory, BufferMemory } from "langchain/memory";
 import { HumanMessage } from "langchain/schema";
 
 
-const curr_openAIApiKey = "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";
+const curr_openAIApiKey = "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";
 
 export const ChatWindowManager = () => {
   const [chatWindows, setChatWindows] = useState([]);
@@ -30,7 +30,8 @@ export const ChatWindowManager = () => {
     const basic_llm = new OpenAI({
         openAIApiKey: curr_openAIApiKey,
       });
-    const chat_mem = new ChatMessageHistory([new HumanMessage("Start of conversation.")]);
+    // const chat_mem = new ChatMessageHistory();
+    const chat_mem = new BufferMemory();
     
     const conversation_chain = new ConversationChain({ llm: basic_llm, memory: chat_mem });
     console.log(conversation_chain)
